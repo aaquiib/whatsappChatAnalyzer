@@ -132,5 +132,26 @@ def activity_heatmap(selected_user, df):
     if selected_user != 'Overall':
         df = df[df['user'] == selected_user]
 
-    user_heatmap = df.pivot_table(index='day_name', columns='period', values='message', aggfunc='count').fillna(0)
+    # Define correct time order
+    time_order = [f"{str(i).zfill(2)}-{str((i+1)%24).zfill(2)}" for i in range(24)]
+
+    # Create pivot table with ordered columns
+    user_heatmap = df.pivot_table(
+        index='day_name',
+        columns='period',
+        values='message',
+        aggfunc='count'
+    ).fillna(0)
+
+    # Reorder the columns (X-axis) to match time order
+    # Filter time_order to include only existing periods
+    existing_periods = [col for col in time_order if col in user_heatmap.columns]
+
+    # Reorder columns safely
+    user_heatmap = user_heatmap[existing_periods]
+
+    # Correct order for days (Y-axis)
+    day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    user_heatmap = user_heatmap.reindex(day_order)
+
     return user_heatmap
