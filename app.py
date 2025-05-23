@@ -3,6 +3,7 @@ import preprocessor
 import helper
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 # Set page configuration for wide layout and modern theme
 st.set_page_config(page_title="WhatsApp Chat Analyzer", layout="wide", page_icon="📱")
@@ -84,7 +85,6 @@ with st.sidebar:
         user_list.sort()
         user_list.insert(0, "Overall")
         
-        # Use a form for stable state management
         with st.form(key="analysis_form"):
             st.session_state.selected_user = st.selectbox("Select User/Group", user_list, help="Choose a user or 'Overall' for group analysis")
             submit_button = st.form_submit_button("Analyze Chat")
@@ -127,15 +127,35 @@ if uploaded_file and st.session_state.show_analysis and st.session_state.df is n
         st.pyplot(fig)
 
         st.markdown("### Daily Timeline")
+        # Month and Year selection
+        col1, col2 = st.columns(2)
+        with col1:
+            available_years = sorted(df['year'].unique())
+            selected_year = st.selectbox("Select Year", available_years, key="year_select")
+        with col2:
+            available_months = sorted(df[df['year'] == selected_year]['month'].unique())
+            selected_month = st.selectbox("Select Month", available_months, key="month_select")
+        
+        # Filter daily timeline for selected month and year
         daily_timeline = helper.daily_timeline(selected_user, df)
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(daily_timeline['only_date'], daily_timeline['message'], color='#25D366', linewidth=2)
-        ax.set_facecolor('#2C2C2C')
-        fig.patch.set_facecolor('#1E1E1E')
-        ax.tick_params(axis='x', rotation=45, colors='white')
-        ax.tick_params(axis='y', colors='white')
-        ax.grid(True, linestyle='--', alpha=0.3)
-        st.pyplot(fig)
+        daily_timeline['only_date'] = pd.to_datetime(daily_timeline['only_date'])
+        filtered_timeline = daily_timeline[
+            (daily_timeline['only_date'].dt.year == selected_year) &
+            (daily_timeline['only_date'].dt.month_name() == selected_month)
+        ]
+        
+        if not filtered_timeline.empty:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            ax.plot(filtered_timeline['only_date'], filtered_timeline['message'], color='#25D366', linewidth=2)
+            ax.set_facecolor('#2C2C2C')
+            fig.patch.set_facecolor('#1E1E1E')
+            ax.tick_params(axis='x', rotation=45, colors='white')
+            ax.tick_params(axis='y', colors='white')
+            ax.grid(True, linestyle='--', alpha=0.3)
+            ax.set_title(f"Daily Activity for {selected_month} {selected_year}", color='white')
+            st.pyplot(fig)
+        else:
+            st.warning(f"No data available for {selected_month} {selected_year}.")
 
     with tab2:
         st.markdown("### Activity Map")
