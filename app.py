@@ -55,6 +55,8 @@ st.markdown("""
 # Initialize session state
 if 'df' not in st.session_state:
     st.session_state.df = None
+if 'last_uploaded_file_name' not in st.session_state:
+    st.session_state.last_uploaded_file_name = None
 if 'selected_user' not in st.session_state:
     st.session_state.selected_user = None
 if 'show_analysis' not in st.session_state:
@@ -68,7 +70,8 @@ with st.sidebar:
     # File uploader
     uploaded_file = st.file_uploader("Upload WhatsApp Chat (.txt)", type=["txt"])
     
-    if uploaded_file:
+    # Process file only if it's new or changed
+    if uploaded_file and uploaded_file.name != st.session_state.last_uploaded_file_name:
         with st.spinner("Processing chat file..."):
             bytes_data = uploaded_file.getvalue()
             data = bytes_data.decode("utf-8")
@@ -77,8 +80,12 @@ with st.sidebar:
                 st.error("Failed to process the file. Please ensure it follows the WhatsApp chat format.")
                 st.stop()
             st.session_state.df = df
+            st.session_state.last_uploaded_file_name = uploaded_file.name
+            st.session_state.show_analysis = False  # Reset analysis view on new file upload
 
-        # User selection
+    # Use processed data for user selection
+    if st.session_state.df is not None:
+        df = st.session_state.df
         user_list = df['user'].unique().tolist()
         if 'group_notification' in user_list:
             user_list.remove('group_notification')

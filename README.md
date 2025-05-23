@@ -1,0 +1,1 @@
+This project is a interactive tool to analyze WhatsApp chat exports. It provides detailed insights, patterns, and visualizations from your group or individual conversations. Built with Python, it leverages data processing and visualization libraries to help uncover trends in your messaging behavior.
