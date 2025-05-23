@@ -164,6 +164,23 @@ if uploaded_file and st.session_state.show_analysis and st.session_state.df is n
         else:
             st.warning(f"No data available for {selected_month} {selected_year}.")
 
+        # Most Busy Users (Group Level)
+        if selected_user == 'Overall':
+            st.markdown("### Most Active Users")
+            x, new_df = helper.most_busy_users(df)
+            col1, col2 = st.columns(2)
+            with col1:
+                fig, ax = plt.subplots(figsize=(5, 4))
+                ax.bar(x.index, x.values, color='#FF5733')
+                ax.set_facecolor('#2C2C2C')
+                fig.patch.set_facecolor('#1E1E1E')
+                ax.tick_params(axis='x', rotation=45, colors='white')
+                ax.tick_params(axis='y', colors='white')
+                st.pyplot(fig)
+            with col2:
+                st.dataframe(new_df.style.set_properties(**{'background-color': '#2C2C2C', 'color': 'white'}))
+
+
     with tab2:
         st.markdown("### Activity Map")
         col1, col2 = st.columns(2)
@@ -198,6 +215,7 @@ if uploaded_file and st.session_state.show_analysis and st.session_state.df is n
         ax.tick_params(colors='white')
         st.pyplot(fig)
 
+        
     with tab3:
         st.markdown("### Word Cloud")
         df_wc = helper.create_wordcloud(selected_user, df)
@@ -229,21 +247,7 @@ if uploaded_file and st.session_state.show_analysis and st.session_state.df is n
             fig.patch.set_facecolor('#1E1E1E')
             st.pyplot(fig)
 
-    # Most Busy Users (Group Level)
-    if selected_user == 'Overall':
-        st.markdown("### Most Active Users")
-        x, new_df = helper.most_busy_users(df)
-        col1, col2 = st.columns(2)
-        with col1:
-            fig, ax = plt.subplots(figsize=(5, 4))
-            ax.bar(x.index, x.values, color='#FF5733')
-            ax.set_facecolor('#2C2C2C')
-            fig.patch.set_facecolor('#1E1E1E')
-            ax.tick_params(axis='x', rotation=45, colors='white')
-            ax.tick_params(axis='y', colors='white')
-            st.pyplot(fig)
-        with col2:
-            st.dataframe(new_df.style.set_properties(**{'background-color': '#2C2C2C', 'color': 'white'}))
+    
 else:
     st.markdown("""
         <div style='text-align: center; padding: 50px;'>
