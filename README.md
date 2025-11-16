@@ -5,7 +5,7 @@ Try the live demo - https://whatsappchat-analyzer-ank.streamlit.app/
 
 🔍 Key Features
 
-Quick Chat Import (Android & iPhone exports supported)
+Quick Chat Import (Android exports supported)
 
 Smart Data Processing using Python
 
