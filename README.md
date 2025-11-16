@@ -1,6 +1,7 @@
 📱 WhatsApp Chat Analyzer – Android App
 
 A Python-powered Android tool that analyzes your exported WhatsApp chats and reveals meaningful insights. Upload any individual or group chat and instantly view stats, patterns, and visualizations about your messaging behavior.
+Try the live demo - https://whatsappchat-analyzer-ank.streamlit.app/
 
 🔍 Key Features
 
